@@ -25,7 +25,7 @@ youtube_dl_options = dict(
     audioformat="mp3",
     noplaylist=True,
     default_search="auto",
-    quiet=False,
+    quiet=True,
     nocheckcertificate=True
 )
 ffmpeg_before_options = "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 10"
