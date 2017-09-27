@@ -2,13 +2,13 @@ from discord.ext import commands
 from discord import VoiceClient, Game
 from api_8tracks import SortTypes, query_8tracks_mixsets, query_8tracks_mixdetails
 from channelobjects import Song, channel_state, mix_option
+from restart import restart_program
 import discord
 import random
 import api_8tracks
 import transaction
 import channelobjects
 from BTrees.OOBTree import OOBTree
-
 
 channel_states = OOBTree()
 currentsortType = SortTypes.hot
@@ -25,7 +25,7 @@ youtube_dl_options = dict(
     audioformat="mp3",
     noplaylist=True,
     default_search="auto",
-    quiet=True,
+    quiet=False,
     nocheckcertificate=True
 )
 ffmpeg_before_options = "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 10"
@@ -200,11 +200,18 @@ async def queue(ctx):
     k = 1
     try:
         for i in range (current_channel_state.song_queue_pos, current_channel_state.song_queue.maxKey()):
-            bot_message = bot_message + str(k) + '.   ' + current_channel_state.song_queue[i].player.title + '\n'
+            song = current_channel_state.song_queue[i]
+            bot_message = bot_message + str(k) + '.   ' + song.player.title + '(' + seconds_to_hms(song.player.duration) + ')\n'
             k = k + 1
     except ValueError:
         bot_message = 'Queue is empty!'
     await bot.say(bot_message)
+
+def seconds_to_hms(seconds: int):
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+    return '{:0>2}:{:0>2}:{:0>2}'.format(h, m, s)
+
 
 @bot.command(pass_context=True)
 async def pause(ctx):
@@ -268,5 +275,9 @@ async def credits():
     """Who made me!"""
     await bot.say('sh0ck_wave made me!')
 
+@bot.command()
+async def restart():
+    await bot.say('Restarting!')
+    restart_program()
 
 bot.run('MzYwNzc3MDA5NjQwNjM2NDE3.DKafUw.XCpw92ASMt8DZ43Do2lvgPTwSAo')
