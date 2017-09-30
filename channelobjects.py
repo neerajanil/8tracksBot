@@ -72,6 +72,9 @@ class channel_state:
             return False
 
     def play_next(self):
+        if self.current_queue_item().player.error:
+            print("bad stuff happened.")
+            print(self.current_queue_item().player.error)
         if self.has_next_song():
             self.increment_queue_pos()
             next_song = self.current_queue_item()
